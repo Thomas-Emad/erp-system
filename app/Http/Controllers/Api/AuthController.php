@@ -4,21 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
-class AuthController extends Controller implements HasMiddleware
+class AuthController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            // ['auth:api', ['except' => ['login', 'register']]],
-
-            new Middleware('permission:factory')
-        ];
-    }
     /**
      * Get a JWT via given credentials.
      *

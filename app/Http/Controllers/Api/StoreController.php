@@ -8,14 +8,14 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Factory;
+use App\Models\Store;
 
-class FactoryController extends Controller implements HasMiddleware
+class StoreController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:factory')
+            new Middleware('permission:store')
         ];
     }
     /**
@@ -25,9 +25,9 @@ class FactoryController extends Controller implements HasMiddleware
     {
         return response()->json([
             'statistics' => [
-                'count' => Factory::count(),
+                'count' => Store::count(),
             ],
-            'factories' => Factory::all(),
+            'stores' => Store::all(),
         ], 200);
     }
 
@@ -37,18 +37,18 @@ class FactoryController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'max:50', 'string', 'unique:factories,name'],
+            'name' => ['required', 'min:3', 'max:50', 'string', 'unique:stores,name'],
             'manger_id' => ['required', 'integer', 'exists:users,id'],
         ]);
 
         if (!$validator->fails()) {
             try {
-                Factory::create([
+                store::create([
                     'name' => $request->name,
                     'manger_id' => $request->manger_id
                 ]);
                 return response()->json([
-                    'message' => 'This factory was successfully established'
+                    'message' => 'This Store was successfully established'
                 ], 201);
             } catch (\Exception $e) {
                 return response()->json([
@@ -68,13 +68,13 @@ class FactoryController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
-            $factory = Factory::where('id', $id)->firstOrFail();
+            $store = Store::where('id', $id)->firstOrFail();
             return response()->json([
-                'factory' => $factory
+                'store' => $store
             ], 202);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' see this Factory'
+                'message' => 'Sorry, We Don\' see this store'
             ], 404);
         }
     }
@@ -85,21 +85,21 @@ class FactoryController extends Controller implements HasMiddleware
     public function update(Request $request, string $id)
     {
         try {
-            $factory = Factory::where('id', $id)->firstOrFail();
+            $store = Store::where('id', $id)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
-                'name' => ['required', 'min:3', 'max:50', 'string', 'unique:factories,name,' . $id],
+                'name' => ['required', 'min:3', 'max:50', 'string', 'unique:stores,name,' . $id],
                 'manger_id' => ['required', 'integer', 'exists:users,id'],
             ]);
 
             if (!$validator->fails()) {
                 try {
-                    $factory->update([
+                    $store->update([
                         'name' => $request->name,
                         'manger_id' => $request->manger_id
                     ]);
                     return response()->json([
-                        'message' => 'This Factory has been updated successfully..'
+                        'message' => 'This Store has been updated successfully..'
                     ], 202);
                 } catch (\Exception $e) {
                     return response()->json([
@@ -113,7 +113,7 @@ class FactoryController extends Controller implements HasMiddleware
             }
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' Found this Factory'
+                'message' => 'Sorry, We Don\' Found this store'
             ], 404);
         }
     }
@@ -124,10 +124,10 @@ class FactoryController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            Factory::find($id)->delete();
+            Store::find($id)->delete();
 
             return response()->json([
-                'message' => 'This factory has been successfully delete'
+                'message' => 'This store has been successfully delete'
             ], 202);
         } catch (\Exception $e) {
             return response()->json([

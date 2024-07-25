@@ -16,7 +16,8 @@ class DatabaseSeeder extends Seeder
      */
     private $permissions = [
         'role',
-        'factory'
+        'factory',
+        'store'
     ];
 
 

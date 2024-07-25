@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\FactoryController;
+use App\Http\Controllers\Api\StoreController;
 
 // User Auth
 Route::group(['prefix' => 'auth', 'middleware' => 'guest'], function () {
@@ -26,4 +26,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Factories
     Route::apiResource('/factories', FactoryController::class);
+
+    // Stores
+    Route::apiResource('/stores', StoreController::class);
 });
