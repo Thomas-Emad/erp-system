@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Machine;
 use App\Models\Factory;
+use App\Models\MachineFactory;
+use App\Models\MachineRawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -62,11 +64,22 @@ class MachineController extends Controller
         ]);
 
         foreach($request->factories as $factory) {
-            MachineFactories::create([
-                'factory_id' => $factory->id,
+
+            MachineFactory::create([
                 'machine_id' => $machine->id,
-                'quantity'   => $factory['quantity']
+                'factory_id' => $factory,
+                'quantity'   => $request->quantity[$factory]
             ]);
+
+        }
+
+        foreach($request->raw_materials as $raw_material) {
+
+            MachineRawMaterial::create([
+                'machine_id' => $machine->id,
+                'raw_material_id' => $raw_material
+            ]);
+
         }
 
         return response()->json([
@@ -115,7 +128,7 @@ class MachineController extends Controller
             ], 400);
         }
 
-        $machine_factories = MachinFactories::where('machine_id', $id)->get();
+        $machine_factories = MachinFactory::where('machine_id', $id)->get();
         foreach($machine_factories as $machine_factory) {
             $machine_factory->destroy($machine_factory->id);
         }
@@ -125,13 +138,24 @@ class MachineController extends Controller
             'price'     => $request->price,
             'is_damage' => $request->is_damage
         ]);
-
+        
         foreach($request->factories as $factory) {
-            MachineFactories::create([
-                'factory_id' => $factory->id,
+
+            MachineFactory::create([
                 'machine_id' => $machine->id,
-                'quantity'   => $factory['quantity']
+                'factory_id' => $factory,
+                'quantity'   => $request->quantity[$factory]
             ]);
+
+        }
+
+        foreach($request->raw_materials as $raw_material) {
+
+            MachineRawMaterial::create([
+                'machine_id' => $machine->id,
+                'raw_material_id' => $raw_material
+            ]);
+            
         }
 
         return response()->json([

@@ -9,6 +9,8 @@ use App\Models\ProductRawMaterial;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Models\RawMaterial;
+use App\Models\Machine;
 
 class ProductController extends Controller
 {
@@ -81,8 +83,8 @@ class ProductController extends Controller
 
             ProductRawMaterial::create([
                 'product_id'               => $product->id,
-                'raw_material_id'          => $raw_material->id,
-                'quantity_of_raw_material' => $raw_material['quantity_of_raw_material']
+                'raw_material_id'          => $raw_material,
+                'quantity_of_raw_material' => $request->quantity_of_raw_material[$raw_material]
             ]);
 
         }
@@ -102,12 +104,12 @@ class ProductController extends Controller
         // If Role == Admin
         $product = Product::where('id', $id)->first();
         $raw_materials = $product->raw_materials;
-        // $stores = $product->stores;
+        $stores = $product->stores;
         return response()->json([
             'Message'       => 'Suc',
             'product'       => $product,
             'raw_materials' => $raw_materials,
-            // 'stores'        => $stores
+            'stores'        => $stores
         ]);
 
     }
@@ -138,9 +140,9 @@ class ProductController extends Controller
         $item = Product::findOrFail($id);
         Storage::delete($item->image);
 
-        foreach($item->materials as $material) {
+        foreach($item->raw_materials as $raw_material) {
 
-            Material::destroy($material->id);
+            Material::destroy($raw_material->id);
 
         }
 
@@ -167,8 +169,8 @@ class ProductController extends Controller
 
             ProductRawMaterial::create([
                 'product_id'               => $product->id,
-                'raw_material_id'          => $raw_material->id,
-                'quantity_of_raw_material' => $raw_material['quantity_of_raw_material']
+                'raw_material_id'          => $raw_material,
+                'quantity_of_raw_material' => $request->quantity_of_raw_material['raw_material']
             ]);
 
         }
