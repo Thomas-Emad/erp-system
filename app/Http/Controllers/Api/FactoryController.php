@@ -52,7 +52,8 @@ class FactoryController extends Controller implements HasMiddleware
                 ], 201);
             } catch (\Exception $e) {
                 return response()->json([
-                    'message' => "Something is wrong!!"
+                    'message' => "Something is wrong!!",
+                    'error' => $e->getMessage()
                 ], 500);
             }
         } else {
@@ -74,7 +75,8 @@ class FactoryController extends Controller implements HasMiddleware
             ], 202);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' see this Factory'
+                'message' => 'Sorry, We Don\' see this Factory',
+                'error' => $e->getMessage()
             ], 404);
         }
     }
@@ -103,7 +105,8 @@ class FactoryController extends Controller implements HasMiddleware
                     ], 202);
                 } catch (\Exception $e) {
                     return response()->json([
-                        'message' => "Something is wrong!!"
+                        'message' => "Something is wrong!!",
+                        'error' => $e->getMessage()
                     ], 500);
                 }
             } else {
@@ -113,7 +116,8 @@ class FactoryController extends Controller implements HasMiddleware
             }
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' Found this Factory'
+                'message' => 'Sorry, We Don\' Found this Factory',
+                'error' => $e->getMessage()
             ], 404);
         }
     }
@@ -131,7 +135,8 @@ class FactoryController extends Controller implements HasMiddleware
             ], 202);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'something is wrong!'
+                'message' => 'something is wrong!',
+                'error' => $e->getMessage()
             ], 404);
         }
     }

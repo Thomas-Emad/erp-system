@@ -8,11 +8,12 @@ use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\SupplierController;
 
 // User Auth
 Route::group(['prefix' => 'auth', 'middleware' => 'guest'], function () {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
 });
 
 Route::group(['middleware' => 'JwtAuth'], function () {
@@ -22,6 +23,8 @@ Route::group(['middleware' => 'JwtAuth'], function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::get('/profile', [AuthController::class, 'profile']);
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::patch('/updateByAdmin/{id}', [AuthController::class, 'updateByAdmin']);
     });
 
     // Roles
@@ -33,7 +36,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Stores
     Route::apiResource('/stores', StoreController::class);
-    
+
     // Product Controller
     Route::group(['prefix' => 'products'], function () {
         Route::get('/index', [ProductController::class, 'index']);
@@ -61,5 +64,10 @@ Route::group(['middleware' => 'JwtAuth'], function () {
         Route::get('/destroy', [RawMaterialController::class, 'destroy']);
     });
 
-});
 
+    // Customers
+    Route::apiResource('/customers', CustomerController::class);
+
+    //  Supplier
+    Route::apiResource('/suppliers', SupplierController::class);
+});

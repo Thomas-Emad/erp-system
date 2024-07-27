@@ -8,14 +8,14 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Store;
+use App\Models\Customer;
 
-class StoreController extends Controller implements HasMiddleware
+class CustomerController extends Controller  implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:store')
+            new Middleware('permission:customer')
         ];
     }
     /**
@@ -25,9 +25,9 @@ class StoreController extends Controller implements HasMiddleware
     {
         return response()->json([
             'statistics' => [
-                'count' => Store::count(),
+                'count' => Customer::count(),
             ],
-            'stores' => Store::all(),
+            'customers' => Customer::all(),
         ], 200);
     }
 
@@ -37,18 +37,20 @@ class StoreController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'max:50', 'string', 'unique:stores,name'],
-            'manger_id' => ['required', 'integer', 'exists:users,id'],
+            'admin_id' => ['required', 'integer', 'exists:users,id'],
+            'name' => ['required', 'min:3', 'max:50', 'string', 'unique:customers,name'],
+            'info' => ['nullable', 'string'],
         ]);
 
         if (!$validator->fails()) {
             try {
-                store::create([
+                Customer::create([
+                    'admin_id' => $request->admin_id,
                     'name' => $request->name,
-                    'manger_id' => $request->manger_id
+                    'info' => $request->info,
                 ]);
                 return response()->json([
-                    'message' => 'This Store was successfully established'
+                    'message' => 'This Customer was successfully established',
                 ], 201);
             } catch (\Exception $e) {
                 return response()->json([
@@ -69,13 +71,13 @@ class StoreController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
-            $store = Store::where('id', $id)->firstOrFail();
+            $customer = Customer::where('id', $id)->firstOrFail();
             return response()->json([
-                'store' => $store
+                'customer' => $customer
             ], 202);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' see this store',
+                'message' => 'Sorry, We Don\' see this customer',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -87,21 +89,23 @@ class StoreController extends Controller implements HasMiddleware
     public function update(Request $request, string $id)
     {
         try {
-            $store = Store::where('id', $id)->firstOrFail();
+            $customer = Customer::where('id', $id)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
-                'name' => ['required', 'min:3', 'max:50', 'string', 'unique:stores,name,' . $id],
-                'manger_id' => ['required', 'integer', 'exists:users,id'],
+                'admin_id' => ['required', 'integer', 'exists:users,id'],
+                'name' => ['required', 'min:3', 'max:50', 'string', 'unique:customers,name,' . $id],
+                'info' => ['nullable', 'string'],
             ]);
 
             if (!$validator->fails()) {
                 try {
-                    $store->update([
+                    $customer->update([
+                        'admin_id' => $request->admin_id,
                         'name' => $request->name,
-                        'manger_id' => $request->manger_id
+                        'info' => $request->info,
                     ]);
                     return response()->json([
-                        'message' => 'This Store has been updated successfully..'
+                        'message' => 'This Customer has been updated successfully..'
                     ], 202);
                 } catch (\Exception $e) {
                     return response()->json([
@@ -116,7 +120,7 @@ class StoreController extends Controller implements HasMiddleware
             }
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' Found this store',
+                'message' => 'Sorry, We Don\' Found this customer',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -128,10 +132,10 @@ class StoreController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            Store::find($id)->delete();
+            Customer::find($id)->delete();
 
             return response()->json([
-                'message' => 'This store has been successfully delete'
+                'message' => 'This customer has been successfully delete'
             ], 202);
         } catch (\Exception $e) {
             return response()->json([

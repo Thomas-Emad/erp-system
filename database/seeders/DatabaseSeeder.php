@@ -15,9 +15,14 @@ class DatabaseSeeder extends Seeder
      * List of applications to add.
      */
     private $permissions = [
+        'login',
+        'users',
+        'worker-dashboard',
         'role',
         'factory',
-        'store'
+        'store',
+        'customer',
+        'supplier',
     ];
 
 
@@ -31,20 +36,29 @@ class DatabaseSeeder extends Seeder
         $user = User::create([
             'name' => 'Owner Erp System',
             'email' => 'owner@gmail.com',
-            'password' => Hash::make('123456')
+            'password' => Hash::make('123456'),
+            'national_id' => '1231212122313',
+            'phone' => fake()->phoneNumber(),
+            'sallary' => fake()->numberBetween(1000, 5000),
+            'wallet' => fake()->randomNumber(),
+            'bus_id' => 1,
+            'today_price' => 100,
+
         ]);
 
-        // Roles
+        // permissions
         foreach ($this->permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
 
+        // Owner
         $role = Role::create(['name' => 'Owner']);
-
         $permissions = Permission::pluck('id', 'id')->all();
-
         $role->syncPermissions($permissions);
-
         $user->assignRole([$role->id]);
+
+        // worker
+        $role = Role::create(['name' => 'worker']);
+        $role->syncPermissions(Permission::where('name', 'worker-dashboard')->first()->id);
     }
 }

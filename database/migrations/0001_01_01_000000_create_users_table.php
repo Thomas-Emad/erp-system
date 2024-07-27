@@ -16,10 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('national_id')->unique()->nullable();
             $table->string('email')->unique();
-            $table->string('phone')->nullable();
+            $table->string('phone');
             $table->integer('sallary')->default(0);
-            $table->string('wallet')->nullable();
-            $table->string('bus_id')->nullable();
+            $table->string('wallet');
+            $table->string('bus_id');
+            $table->integer('today_price')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
