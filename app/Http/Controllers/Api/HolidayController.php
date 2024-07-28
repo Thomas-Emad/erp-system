@@ -15,7 +15,7 @@ class HolidayController extends Controller  implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:Holiday')
+            new Middleware('permission:holiday')
         ];
     }
     /**
@@ -37,7 +37,7 @@ class HolidayController extends Controller  implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => ['required', 'min:3', 'max:50', 'string', 'unique:holidays,name'],
+            'title' => ['required', 'min:3', 'max:50', 'string', 'unique:holidays,title'],
             'start' => ['required', 'string', 'min:3', 'max:10'],
             'end' => ['required', 'string', 'min:3', 'max:10'],
         ]);
@@ -88,7 +88,7 @@ class HolidayController extends Controller  implements HasMiddleware
             $holiday = Holiday::where('id', $id)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
-                'title' => ['required', 'min:3', 'max:50', 'string', 'unique:holidays,name,' . $id],
+                'title' => ['required', 'min:3', 'max:50', 'string', 'unique:holidays,title,' . $id],
                 'start' => ['required', 'string', 'min:3', 'max:10'],
                 'end' => ['required', 'string', 'min:3', 'max:10'],
             ]);

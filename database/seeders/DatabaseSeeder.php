@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         'store',
         'customer',
         'supplier',
+        'holiday'
     ];
 
 
