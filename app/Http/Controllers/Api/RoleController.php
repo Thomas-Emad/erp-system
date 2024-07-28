@@ -43,13 +43,19 @@ class RoleController extends Controller implements HasMiddleware
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:roles,name',
-            'permission' => 'required|array'
+            'permission' => 'required|array',
+            'start_work' => 'required|date_format:H:i',
+            'end_work' => 'required|date_format:H:i',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         try {
-            $role = Role::create(['name' => $request->input('name')]);
+            $role = Role::create([
+                'name' =>  $request->input('name'),
+                'start_work' => $request->input('start_work'),
+                'end_work' => $request->input('end_work'),
+            ]);
 
             $permissionIds = $request->input('permission');
             $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
@@ -97,7 +103,9 @@ class RoleController extends Controller implements HasMiddleware
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:roles,name,' . $id,
-            'permission' => 'required|array'
+            'permission' => 'required|array',
+            'start_work' => 'required|date_format:H:i',
+            'end_work' => 'required|date_format:H:i',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -105,6 +113,8 @@ class RoleController extends Controller implements HasMiddleware
         try {
             $role = Role::findOrFail($id);
             $role->name = $request->input('name');
+            $role->start_work = $request->input('start_work');
+            $role->end_work = $request->input('end_work');
             $role->save();
 
             // Check from Permissions Then Put Names in Array

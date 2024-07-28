@@ -54,13 +54,21 @@ class DatabaseSeeder extends Seeder
         }
 
         // Owner
-        $role = Role::create(['name' => 'Owner']);
+        $role = Role::create([
+            'name' => 'Owner',
+            'start_work' => '10:00',
+            'end_work' => '20:00',
+        ]);
         $permissions = Permission::pluck('id', 'id')->all();
         $role->syncPermissions($permissions);
         $user->assignRole([$role->id]);
 
         // worker
-        $role = Role::create(['name' => 'worker']);
+        $role = Role::create([
+            'name' => 'worker',
+            'start_work' => '10:00',
+            'end_work' => '20:00',
+        ]);
         $role->syncPermissions(Permission::where('name', 'worker-dashboard')->first()->id);
     }
 }
