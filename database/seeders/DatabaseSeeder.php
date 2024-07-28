@@ -31,7 +31,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            HolidaysTableSeeder::class
+        ]);
 
         $user = User::create([
             'name' => 'Owner Erp System',
@@ -43,7 +45,6 @@ class DatabaseSeeder extends Seeder
             'wallet' => fake()->randomNumber(),
             'bus_id' => 1,
             'today_price' => 100,
-
         ]);
 
         // permissions

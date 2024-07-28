@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\HolidayController;
 use App\Http\Controllers\Api\SupplierController;
 
 // User Auth
@@ -70,4 +71,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     //  Supplier
     Route::apiResource('/suppliers', SupplierController::class);
+
+    // holidays
+    Route::apiResource('/holidays', HolidayController::class);
 });
