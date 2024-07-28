@@ -11,7 +11,7 @@ class Reward extends Model
 
     protected $fillable = [
         'reward_value',
-        'reason_of_reward',
+        'reason_for_reward',
         'employee_id'
     ];
 

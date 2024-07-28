@@ -11,7 +11,7 @@ class Rival extends Model
 
     protected $fillable = [
         'rival_value',
-        'reason_of_rival',
+        'reason_for_rival',
         'employee_id'
     ];
 

@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\HolidayController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\VacationController;
 use App\Http\Controllers\Api\AttendaceController;
+use App\Http\Controllers\RivalController;
+use App\Http\Controllers\RewardController;
 
 // User Auth
 Route::group(['prefix' => 'auth', 'middleware' => 'guest'], function () {
@@ -67,6 +69,19 @@ Route::group(['middleware' => 'JwtAuth'], function () {
         Route::get('/destroy', [RawMaterialController::class, 'destroy']);
     });
 
+    // Rivals Controller
+    Route::group(['prefix' => 'rivals'], function () {
+        Route::post('/store', [RivalController::class, 'store']);
+        Route::put('/update/{id}', [RivalController::class, 'update']);
+        Route::get('/destroy/{id}', [RivalController::class, 'destroy']);
+    });
+
+    // Reward Controller
+    Route::group(['prefix' => 'rewards'], function () {
+        Route::post('/store', [RewardController::class, 'store']);
+        Route::put('/update/{id}', [RewardController::class, 'update']);
+        Route::get('/destroy/{id}', [RewardController::class, 'destroy']);
+    });
 
     // Customers
     Route::apiResource('/customers', CustomerController::class);
