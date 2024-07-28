@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Http\Controllers\Api;
@@ -8,17 +9,16 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Factory;
+use App\Models\Vacation;
+use Illuminate\Validation\Rule;
+use App\Enums\VacationDay;
 
-use App\Models\User;
-
-
-class FactoryController extends Controller implements HasMiddleware
+class VacationController extends Controller  implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:factory')
+            new Middleware('permission:vacation')
         ];
     }
     /**
@@ -26,14 +26,11 @@ class FactoryController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $worker = User::firstOrFail('id', 1);
-        return $worker->roles->first()->start_work;
-
         return response()->json([
             'statistics' => [
-                'count' => Factory::count(),
+                'count' => Vacation::count(),
             ],
-            'factories' => Factory::all(),
+            'vacations' => Vacation::all(),
         ], 200);
     }
 
@@ -43,18 +40,16 @@ class FactoryController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'max:50', 'string', 'unique:factories,name'],
-            'manger_id' => ['required', 'integer', 'exists:users,id'],
+            'admin_id' => ['required', 'unique:users,id'],
+            'user_id' => ['required', 'unique:users,id'],
+            'vacation_day' => ['required', Rule::enum(VacationDay::class)],
         ]);
 
         if (!$validator->fails()) {
             try {
-                Factory::create([
-                    'name' => $request->name,
-                    'manger_id' => $request->manger_id
-                ]);
+                Vacation::create($validator->validated());
                 return response()->json([
-                    'message' => 'This factory was successfully established'
+                    'message' => 'This Vacation was successfully established'
                 ], 201);
             } catch (\Exception $e) {
                 return response()->json([
@@ -75,13 +70,13 @@ class FactoryController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
-            $factory = Factory::where('id', $id)->firstOrFail();
+            $vacation = Vacation::where('id', $id)->firstOrFail();
             return response()->json([
-                'factory' => $factory
+                'Vacation' => $vacation
             ], 202);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' see this Factory',
+                'message' => 'Sorry, We Don\' see this Vacation',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -93,21 +88,19 @@ class FactoryController extends Controller implements HasMiddleware
     public function update(Request $request, string $id)
     {
         try {
-            $factory = Factory::where('id', $id)->firstOrFail();
+            $vacation = Vacation::where('id', $id)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
-                'name' => ['required', 'min:3', 'max:50', 'string', 'unique:factories,name,' . $id],
-                'manger_id' => ['required', 'integer', 'exists:users,id'],
+                'admin_id' => ['required', 'unique:users,id'],
+                'user_id' => ['required', 'unique:users,id'],
+                'vacation_day' => ['required', Rule::enum(VacationDay::class)],
             ]);
 
             if (!$validator->fails()) {
                 try {
-                    $factory->update([
-                        'name' => $request->name,
-                        'manger_id' => $request->manger_id
-                    ]);
+                    $vacation->update($validator->validated());
                     return response()->json([
-                        'message' => 'This Factory has been updated successfully..'
+                        'message' => 'This Vacation has been updated successfully..'
                     ], 202);
                 } catch (\Exception $e) {
                     return response()->json([
@@ -122,7 +115,7 @@ class FactoryController extends Controller implements HasMiddleware
             }
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' Found this Factory',
+                'message' => 'Sorry, We Don\' Found this Vacation',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -134,10 +127,10 @@ class FactoryController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            Factory::find($id)->delete();
+            Vacation::find($id)->delete();
 
             return response()->json([
-                'message' => 'This factory has been successfully delete'
+                'message' => 'This Vacation has been successfully delete'
             ], 202);
         } catch (\Exception $e) {
             return response()->json([

@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Http\Controllers\Api;
@@ -8,17 +9,15 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Factory;
-
+use App\Models\Attendace;
 use App\Models\User;
 
-
-class FactoryController extends Controller implements HasMiddleware
+class AttendaceController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:factory')
+            new Middleware('permission:attendace')
         ];
     }
     /**
@@ -26,14 +25,9 @@ class FactoryController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $worker = User::firstOrFail('id', 1);
-        return $worker->roles->first()->start_work;
-
         return response()->json([
-            'statistics' => [
-                'count' => Factory::count(),
-            ],
-            'factories' => Factory::all(),
+            'attendace_today' => Attendace::where('created_at', now()->today())->count(),
+            'attendaces' => Attendace::where('created_at', now()->today())->get(),
         ], 200);
     }
 
@@ -43,18 +37,27 @@ class FactoryController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'max:50', 'string', 'unique:factories,name'],
-            'manger_id' => ['required', 'integer', 'exists:users,id'],
+            'admin_id' => ['required', 'integer', 'unique:users,id'],
+            'worker_id' => ['required', 'integer', 'exists:users,id'],
+            'presence' => ['nullable', 'datetime'],
+            'departure' => ['nullable', 'datetime']
         ]);
 
         if (!$validator->fails()) {
             try {
-                Factory::create([
-                    'name' => $request->name,
-                    'manger_id' => $request->manger_id
-                ]);
+                Attendace::create($validator->validated());
+
+                // Check From Time presence, departure
+                $worker = User::firstOrFail('id', 1);
+                if ($worker->roles->first()->start_work < now()->time()) {
+                    // خصم الان باشمهندسه جاي من بيته متاخر
+                }
+                if (!empty($request->input('departure')) && $worker->roles->first()->end_work < now()->time()) {
+                    // خصم, لانه مشي بدري, البيه
+                }
+
                 return response()->json([
-                    'message' => 'This factory was successfully established'
+                    'message' => 'This Attendace was successfully established'
                 ], 201);
             } catch (\Exception $e) {
                 return response()->json([
@@ -75,13 +78,13 @@ class FactoryController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
-            $factory = Factory::where('id', $id)->firstOrFail();
+            $attendace = Attendace::where('id', $id)->firstOrFail();
             return response()->json([
-                'factory' => $factory
+                'Attendace' => $attendace
             ], 202);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' see this Factory',
+                'message' => 'Sorry, We Don\' see this Attendace',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -93,21 +96,20 @@ class FactoryController extends Controller implements HasMiddleware
     public function update(Request $request, string $id)
     {
         try {
-            $factory = Factory::where('id', $id)->firstOrFail();
+            $attendace = Attendace::where('id', $id)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
-                'name' => ['required', 'min:3', 'max:50', 'string', 'unique:factories,name,' . $id],
-                'manger_id' => ['required', 'integer', 'exists:users,id'],
+                'admin_id' => ['required', 'integer', 'unique:users,id'],
+                'worker_id' => ['required', 'integer', 'exists:users,id'],
+                'presence' => ['nullable', 'datetime'],
+                'departure' => ['nullable', 'datetime']
             ]);
 
             if (!$validator->fails()) {
                 try {
-                    $factory->update([
-                        'name' => $request->name,
-                        'manger_id' => $request->manger_id
-                    ]);
+                    $attendace->update($validator->validated());
                     return response()->json([
-                        'message' => 'This Factory has been updated successfully..'
+                        'message' => 'This Attendace has been updated successfully..'
                     ], 202);
                 } catch (\Exception $e) {
                     return response()->json([
@@ -122,7 +124,7 @@ class FactoryController extends Controller implements HasMiddleware
             }
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Sorry, We Don\' Found this Factory',
+                'message' => 'Sorry, We Don\' Found this Attendace',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -134,10 +136,10 @@ class FactoryController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            Factory::find($id)->delete();
+            Attendace::find($id)->delete();
 
             return response()->json([
-                'message' => 'This factory has been successfully delete'
+                'message' => 'This Attendace has been successfully delete'
             ], 202);
         } catch (\Exception $e) {
             return response()->json([
