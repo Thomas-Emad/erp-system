@@ -40,15 +40,14 @@ class SupplierController extends Controller  implements HasMiddleware
             'admin_id' => ['required', 'integer', 'exists:users,id'],
             'name' => ['required', 'min:3', 'max:50', 'string', 'unique:suppliers,name'],
             'info' => ['nullable', 'string'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:30'],
+            'brithday' => ['nullable', 'date'],
         ]);
 
         if (!$validator->fails()) {
             try {
-                Supplier::create([
-                    'admin_id' => $request->admin_id,
-                    'name' => $request->name,
-                    'info' => $request->info,
-                ]);
+                Supplier::create($validator->validated());
                 return response()->json([
                     'message' => 'This Supplier was successfully established'
                 ], 201);
@@ -95,15 +94,14 @@ class SupplierController extends Controller  implements HasMiddleware
                 'admin_id' => ['required', 'integer', 'exists:users,id'],
                 'name' => ['required', 'min:3', 'max:50', 'string', 'unique:suppliers,name,' . $id],
                 'info' => ['nullable', 'string'],
+                'phone' => ['nullable', 'string', 'max:20'],
+                'address' => ['nullable', 'string', 'max:30'],
+                'brithday' => ['nullable', 'date'],
             ]);
 
             if (!$validator->fails()) {
                 try {
-                    $supplier->update([
-                        'admin_id' => $request->admin_id,
-                        'name' => $request->name,
-                        'info' => $request->info,
-                    ]);
+                    $supplier->update($validator->validated());
                     return response()->json([
                         'message' => 'This Supplier has been updated successfully..'
                     ], 202);

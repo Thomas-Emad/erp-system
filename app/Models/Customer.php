@@ -18,5 +18,8 @@ class Customer extends Model
         'admin_id',
         'name',
         'info',
+        'phone',
+        'address',
+        'brithday'
     ];
 }

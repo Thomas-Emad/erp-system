@@ -40,15 +40,14 @@ class CustomerController extends Controller  implements HasMiddleware
             'admin_id' => ['required', 'integer', 'exists:users,id'],
             'name' => ['required', 'min:3', 'max:50', 'string', 'unique:customers,name'],
             'info' => ['nullable', 'string'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:30'],
+            'brithday' => ['nullable', 'date'],
         ]);
 
         if (!$validator->fails()) {
             try {
-                Customer::create([
-                    'admin_id' => $request->admin_id,
-                    'name' => $request->name,
-                    'info' => $request->info,
-                ]);
+                Customer::create($validator->validated());
                 return response()->json([
                     'message' => 'This Customer was successfully established',
                 ], 201);
@@ -95,15 +94,14 @@ class CustomerController extends Controller  implements HasMiddleware
                 'admin_id' => ['required', 'integer', 'exists:users,id'],
                 'name' => ['required', 'min:3', 'max:50', 'string', 'unique:customers,name,' . $id],
                 'info' => ['nullable', 'string'],
+                'phone' => ['nullable', 'string', 'max:20'],
+                'address' => ['nullable', 'string', 'max:30'],
+                'brithday' => ['nullable', 'date'],
             ]);
 
             if (!$validator->fails()) {
                 try {
-                    $customer->update([
-                        'admin_id' => $request->admin_id,
-                        'name' => $request->name,
-                        'info' => $request->info,
-                    ]);
+                    $customer->update($validator->validated());
                     return response()->json([
                         'message' => 'This Customer has been updated successfully..'
                     ], 202);
