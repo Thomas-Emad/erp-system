@@ -45,7 +45,7 @@ class TaskController extends Controller
     public function add_employee_for_task(Request $request, $task_id) {
 
         $validate = Validator::make($request->all(), [
-            'employees' => ['required', 'integer']
+            'employees' => ['required']
         ]);
 
         if ($validate->fails()) {
@@ -125,7 +125,7 @@ class TaskController extends Controller
             ], 400);
         }
 
-        $task = Task::where('id', $task_id)->where('status', '!=', 'approved')->first();
+        $task = Task::where('id', $task_id)->where('status', '=', 'delivered')->first();
 
         if($task) {
 
@@ -139,17 +139,25 @@ class TaskController extends Controller
                 if ($task->delivered_time > $task->date) {
 
                     // سيتم اضافة مكافأة
-                    $task->employee->update([
-                        'wallet' => $task->employee->wallet + $task->reward
-                    ]);
+                    foreach($task->employees as $employee) {
+
+                        $task->employee->update([
+                            'wallet' => $task->employee->wallet + $task->reward
+                        ]);
+
+                    }
 
                 // لو سلمها بعد ميعاد التسليم 
                 } elseif($task->delivered_time < $task->date) {
 
                     // سيتم اضافة خصم
-                    $task->employee->update([
-                        'wallet' => $task->employee->wallet - $task->rival
-                    ]);
+                    foreach($task->employees as $employee) {
+
+                        $task->employee->update([
+                            'wallet' => $task->employee->wallet - $task->rival
+                        ]);
+
+                    }
 
                 }
 

@@ -16,6 +16,7 @@ class Task extends Model
         'reward',
         'rival',
         'status',
+        'delivered_time',
         'manager_id'
     ];
 
