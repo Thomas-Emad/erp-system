@@ -11,6 +11,8 @@ use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\HolidayController;
 use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\VacationController;
+use App\Http\Controllers\Api\AttendaceController;
 
 // User Auth
 Route::group(['prefix' => 'auth', 'middleware' => 'guest'], function () {
@@ -74,4 +76,10 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // holidays
     Route::apiResource('/holidays', HolidayController::class);
+
+    // Vacation
+    Route::apiResource('/vacations', VacationController::class);
+
+    // attendaces
+    Route::apiResource('/attendaces', AttendaceController::class);
 });

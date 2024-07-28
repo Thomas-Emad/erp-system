@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
+use App\Enums\VacationDay;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -57,7 +59,8 @@ class AuthController extends Controller
             'wallet' =>  'required|string|min:3|max:256',
             'bus_id' => 'required|integer',
             'today_price' =>  'required|integer|min:10|max:1000',
-            'roles' => 'required'
+            'roles' => 'required',
+            'vacation_day' => 'required', [Rule::enum(VacationDay::class)],
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -100,7 +103,8 @@ class AuthController extends Controller
             'wallet' =>  'required|string|min:3|max:256',
             'bus_id' => 'required|integer',
             'today_price' =>  'required|integer|min:10|max:1000',
-            'roles' => 'required'
+            'roles' => 'required',
+            'vacation_day' => 'required', [Rule::enum(VacationDay::class)],
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
