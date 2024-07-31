@@ -12,9 +12,16 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\HolidayController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\VacationController;
+<<<<<<< HEAD
+use App\Http\Controllers\Api\AttendanceController;
+=======
 use App\Http\Controllers\Api\AttendaceController;
 use App\Http\Controllers\RivalController;
 use App\Http\Controllers\RewardController;
+<<<<<<< Updated upstream
+=======
+>>>>>>> 5e385a5f9441329c0c17bf7d5f55e15140b3558a
+>>>>>>> Stashed changes
 
 // User Auth
 Route::group(['prefix' => 'auth', 'middleware' => 'guest'], function () {
@@ -96,5 +103,8 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::apiResource('/vacations', VacationController::class);
 
     // attendaces
-    Route::apiResource('/attendaces', AttendaceController::class);
+    Route::group(['controller' => AttendanceController::class], function () {
+        Route::get('/attendaces', 'index');
+        Route::post('/attendaces', 'store');
+    });
 });

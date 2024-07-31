@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
+use Carbon\Carbon;
+
 
 
 class User extends Authenticatable implements JWTSubject
@@ -71,5 +73,22 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    private  function calcPriceForHour($start, $end, $todayPrice)
+    {
+        $start =  Carbon::createFromFormat("H:i:s", $start);
+        $end =  Carbon::createFromFormat("H:i:s", $end);
+
+        // Calc Diff for seconds
+        $diffInSeconds = abs($end->diffInSeconds($start));
+        $hours = $diffInSeconds / 3600;
+
+        // Calc the hours rate based on daily working hours
+        $hourlyRate =  $todayPrice /  $hours;
+        return $hourlyRate;
+    }
+    public function priceOneHourForWork()
+    {
+        return   $this->calcPriceForHour($this->roles->first()->start_work,  $this->roles->first()->end_work, $this->today_price);
     }
 }

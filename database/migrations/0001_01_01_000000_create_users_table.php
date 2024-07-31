@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone');
             $table->integer('sallary')->default(0);
-            $table->string('wallet');
+            $table->integer('wallet')->default(0);
             $table->string('bus_id');
             $table->integer('today_price')->default(0);
             $table->timestamp('email_verified_at')->nullable();

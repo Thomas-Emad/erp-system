@@ -15,7 +15,8 @@ class Rival extends Model
         'employee_id'
     ];
 
-    public function employee() {
+    public function employee()
+    {
         return $this->belongsTo(User::class);
     }
 }

@@ -56,7 +56,7 @@ class AuthController extends Controller
             'national_id' => 'required|string|min:6|unique:users',
             'phone' => 'required|string|min:3',
             'sallary' =>  'required|integer|min:1000|max:1000000',
-            'wallet' =>  'required|string|min:3|max:256',
+            'wallet' =>  'nullable|integer',
             'bus_id' => 'required|integer',
             'today_price' =>  'required|integer|min:10|max:1000',
             'roles' => 'required',
