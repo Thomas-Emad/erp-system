@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\VacationController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\RivalController;
 use App\Http\Controllers\RewardController;
+use App\Http\Controllers\BuyingInvoiceController;
+use App\Http\Controllers\SellingInvoiceController;
 
 // User Auth
 Route::group(['prefix' => 'auth', 'middleware' => 'guest'], function () {
@@ -100,4 +102,19 @@ Route::group(['middleware' => 'JwtAuth'], function () {
         Route::get('/attendaces', 'index');
         Route::post('/attendaces', 'store');
     });
+
+    // Buying Invoice
+    Route::group(['prefix' => 'BuyingInvoice'], function () {
+        Route::post('/create', [BuyingInvoiceController::class, 'CreateBuyingInvoice']);
+        Route::put('/AddRawMaterial/{buying_invoice_id}', [BuyingInvoiceController::class, 'AddRawMaterialInInvoice']);
+        Route::put('/Delete/{buying_invoice_raw_material_id}', [BuyingInvoiceController::class, 'DeleteRawMaterialFromBuyingInvoice']);
+    });
+
+    // Selling Invoice
+    Route::group(['prefix' => 'SellingInvoice'], function () {
+        Route::post('/create', [SellingInvoiceController::class, 'CreateSellingInvoice']);
+        Route::put('/AddProduct/{selling_invoice_id}', [SellingInvoiceController::class, 'AddProductInInvoice']);
+        Route::put('/Delete/{selling_invoice_product_id}', [SellingInvoiceController::class, 'DeleteProductFromSellingInvoice']);
+    });
+
 });
