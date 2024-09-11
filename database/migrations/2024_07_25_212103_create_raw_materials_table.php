@@ -6,26 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('raw_materials', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description');
-            $table->decimal('price');
-            $table->integer('quantity')->default(0);
-            $table->timestamps();
-        });
-    } 
+  /**
+   * Run the migrations.
+   */
+  public function up(): void
+  {
+    Schema::create('raw_materials', function (Blueprint $table) {
+      $table->id();
+      $table->string('name');
+      $table->text('description');
+      $table->decimal('price');
+      $table->decimal('price_installment');
+      $table->integer('quantity')->default(0);
+      $table->timestamps();
+    });
+  }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('raw_materials');
-    }
+  /**
+   * Reverse the migrations.
+   */
+  public function down(): void
+  {
+    Schema::dropIfExists('raw_materials');
+  }
 };

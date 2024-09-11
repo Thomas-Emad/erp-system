@@ -7,24 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class RawMaterial extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'quantity'
-    ];
+  protected $fillable = [
+    'name',
+    'description',
+    'price',
+    'quantity',
+    'price_installment'
+  ];
 
-    public function productss() {
-        return $this->belongsToMany(Product::class);
-    }
+  public function productss()
+  {
+    return $this->belongsToMany(Product::class);
+  }
 
-    public function machines() {
-        return $this->belongsToMany(Machine::class);
-    }
+  public function machines()
+  {
+    return $this->belongsToMany(Machine::class);
+  }
 
-    public function factories() {
-        return $this->belongsToMany(Factory::class);
-    }
+  public function factories()
+  {
+    return $this->belongsToMany(Factory::class);
+  }
 }
