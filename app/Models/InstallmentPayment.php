@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InstallmentPayment extends Model
 {
@@ -17,4 +18,9 @@ class InstallmentPayment extends Model
     'date',
     'type',
   ];
+
+  public function installment(): BelongsTo
+  {
+    return $this->belongsTo(Installment::class);
+  }
 }

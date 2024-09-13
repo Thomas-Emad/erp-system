@@ -7,18 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Supplier extends Model
 {
-    use HasFactory;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'admin_id',
-        'name',
-        'info',
-        'phone',
-        'address',
-        'brithday'
-    ];
+  use HasFactory;
+  /**
+   * The attributes that are mass assignable.
+   *
+   * @var array<int, string>
+   */
+  protected $fillable = [
+    'admin_id',
+    'name',
+    'email',
+    'info',
+    'phone',
+    'address',
+    'brithday'
+  ];
 }

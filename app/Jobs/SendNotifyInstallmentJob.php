@@ -2,12 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\InstallmentPayment;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use App\Models\InstallmentSupplierPayments;
 use Illuminate\Support\Facades\Mail;
 
 class SendNotifyInstallmentJob implements ShouldQueue
@@ -20,7 +17,7 @@ class SendNotifyInstallmentJob implements ShouldQueue
    */
   public function __construct()
   {
-    $this->installmentsPayment =  InstallmentSupplierPayments::where('status', 'unpaid')
+    $this->installmentsPayment =  InstallmentPayment::where('status', 'unpaid')
       ->where('date', '<=', today())
       ->get();
   }
@@ -28,14 +25,14 @@ class SendNotifyInstallmentJob implements ShouldQueue
   /**
    * Execute the job.
    */
-  public function handle($installmentsPayment): void
+  public function handle(): void
   {
-
-    foreach ($installmentsPayment as $payment) {
-      Mail::send([], [], function ($message) use ($payment) {
-        $message->to($payment->supplier->email)
-          ->subject("Installment Payment")
-          ->setBody("Installment Payment ID " . $payment->installment_id . " Amount " . $payment->amount . ' Date ' . $payment->date, 'text/html')
+    foreach ($this->installmentsPayment as $payment) {
+      $emailTo = $payment->installment->type == 'supplier' ? $payment->installment->supplier->email : $payment->installment->customer->email;
+      Mail::send([], [], function ($message) use ($payment, $emailTo) {
+        $message->to($emailTo)
+          ->subject("Installment Payment To:" . $payment->installment->type)
+          ->text("Installment Payment ID: " . $payment->installment_id . "\nAmount: " . $payment->amount . "\nDate: " . $payment->date)
           ->from("xR6rA@example.com", "Pembayaran Tagihan");
       });
     }
