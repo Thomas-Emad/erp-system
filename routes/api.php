@@ -1,24 +1,30 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\FactoryController;
-use App\Http\Controllers\Api\StoreController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\MachineController;
-use App\Http\Controllers\RawMaterialController;
-use App\Http\Controllers\Api\CustomerController;
-use App\Http\Controllers\Api\HolidayController;
-use App\Http\Controllers\Api\SupplierController;
-use App\Http\Controllers\Api\VacationController;
-use App\Http\Controllers\Api\AttendanceController;
-use App\Http\Controllers\RivalController;
-use App\Http\Controllers\RewardController;
-use App\Http\Controllers\SellingInvoiceController;
-use App\Http\Controllers\BuyingInvoiceController;
-use App\Http\Controllers\Api\InstallmentSupplierController;
-use App\Http\Controllers\Api\InstallmentCustomerController;
+use App\Http\Controllers\Api\{
+  AuthController,
+  RoleController,
+  FactoryController,
+  StoreController,
+  CustomerController,
+  HolidayController,
+  SupplierController,
+  VacationController,
+  AttendanceController,
+  InstallmentSupplierController,
+  InstallmentCustomerController,
+  TransactionController,
+  SalariesController
+};
+use App\Http\Controllers\{
+  ProductController,
+  MachineController,
+  RawMaterialController,
+  RivalController,
+  RewardController,
+  SellingInvoiceController,
+  BuyingInvoiceController,
+};
 
 
 // User Auth
@@ -127,4 +133,8 @@ Route::group(['middleware' => 'JwtAuth'], function () {
   // Installment Customer
   Route::apiResource('/installment_customers', InstallmentCustomerController::class);
   Route::post('/installment_customers/paid', [InstallmentCustomerController::class, 'paidPaymentInstallment']);
+
+  // Transaction Controller
+  Route::apiResource('/transactions', TransactionController::class);
+  Route::apiResource('/salaries', SalariesController::class);
 });
