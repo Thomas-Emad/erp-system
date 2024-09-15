@@ -18,5 +18,6 @@ class Attendance extends Model
         'worker_id',
         'presence',
         'departure',
+        'day'
     ];
 }

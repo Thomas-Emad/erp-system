@@ -21,6 +21,10 @@ class Task extends Model
     ];
 
     public function employees() {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'employee_task', 'employee_id', 'task_id');
     }
+
+    public function manager() {
+        return $this->belongsTo(User::class);
+    } 
 }

@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("worker_id");
-            $table->dateTime('presence')->default(now());
-            $table->dateTime('departure')->nullable();
+            $table->time('presence')->default(now());
+            $table->time('departure')->nullable();
+            $table->date('day')->default(now()->format('Y-m-d'));
             $table->timestamps();
 
             $table->foreign('worker_id')->references('id')->on("users")->noActionOnDelete();

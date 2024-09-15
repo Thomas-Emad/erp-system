@@ -10,12 +10,12 @@ use App\Http\Controllers\Api\{
   HolidayController,
   SupplierController,
   VacationController,
-  AttendanceController,
   InstallmentSupplierController,
   InstallmentCustomerController,
   TransactionController,
   SalariesController
 };
+
 use App\Http\Controllers\{
   ProductController,
   MachineController,
@@ -24,8 +24,12 @@ use App\Http\Controllers\{
   RewardController,
   SellingInvoiceController,
   BuyingInvoiceController,
+  TaskController,
+  AttendanceController,
+  OrderController,
+  VacationRequestController,
+  SwitchController
 };
-
 
 // User Auth
 Route::group(['prefix' => 'auth', 'middleware' => 'guest'], function () {
@@ -137,4 +141,39 @@ Route::group(['middleware' => 'JwtAuth'], function () {
   // Transaction Controller
   Route::apiResource('/transactions', TransactionController::class);
   Route::apiResource('/salaries', SalariesController::class);
+
+      // Order Invoice
+      Route::group(['prefix' => 'orders'], function () {
+        Route::post('/create', [OrderController::class, 'CraeteOrder']);
+        Route::put('/AddProduct/{order_id}', [OrderController::class, 'AddProductInOreder']);
+        Route::put('/edit/{order_id}', [OrderController::class, 'DeliveryOfTheOrder']);
+    });
+
+    // Switchs Invoice
+    Route::group(['prefix' => 'switchs'], function () {
+        Route::post('/store', [SwitchController::class, 'SwitchBetweenStore']);
+        Route::post('/factory', [SwitchController::class, 'SwitchBetweenFactory']);
+    });
+
+    // vacation request Invoice
+    Route::group(['prefix' => 'vacation_request'], function () {
+        Route::post('/store', [VacationRequestController::class, 'store']);
+        Route::put('/update/{id}', [VacationRequestController::class, 'update']);
+        Route::delete('/delete/{id}', [VacationRequestController::class, 'delete']);
+    });
+
+    // Tasks Invoice
+    Route::group(['prefix' => 'tasks'], function () {
+        Route::post('/store', [TaskController::class, 'store']);
+        Route::put('/update/{id}', [TaskController::class, 'update']);
+        Route::put('/add_employee/{id}', [TaskController::class, 'add_employee_for_task']);
+        Route::put('/modify_by_admin/{id}', [TaskController::class, 'modify_status_by_admin']);
+        Route::put('/modify_by_manager/{id}', [TaskController::class, 'modify_status_by_manager']);
+    });
+
+    // Attendants Invoice
+    Route::group(['prefix' => 'attendance'], function () {
+        Route::post('/store', [AttendanceController::class, 'store']);
+    });
+
 });

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Rival;
+use App\Models\Reward;
 use App\Models\EmployeeTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +20,7 @@ class TaskController extends Controller
             'deadline'      => ['required', 'date'],
             'reward'        => ['required', 'integer'],
             'rival'         => ['required', 'integer'],
-            'manager_id'    => ['integer', 'required']
+            'manager_id'    => ['integer', 'required', 'exists:users,id']
         ]);
 
         if ($validate->fails()) {
@@ -45,7 +47,8 @@ class TaskController extends Controller
     public function add_employee_for_task(Request $request, $task_id) {
 
         $validate = Validator::make($request->all(), [
-            'employees' => ['required']
+            'employees'   => ['required', 'array'],
+            'employees.*' => ['exists:users,id'],
         ]);
 
         if ($validate->fails()) {
@@ -89,7 +92,7 @@ class TaskController extends Controller
             'deadline'      => ['required', 'date'],
             'reward'        => ['required', 'integer'],
             'rival'         => ['required', 'integer'],
-            'manager_id'    => ['integer', 'required']
+            'manager_id'    => ['integer', 'required', 'exists:users,id']
         ]);
 
         if ($validate->fails()) {
@@ -136,25 +139,57 @@ class TaskController extends Controller
                 ]);
 
                 // لو سلمها قبل ميعاد التسليم
-                if ($task->delivered_time > $task->date) {
+                if ($task->delivered_time < $task->date) {
+
+                    $task->manager->update([
+                        'wallet' => $task->manager->wallet + $task->reward
+                    ]);
+
+                    Reward::create([
+                        'reward_value' => $task->reward,
+                        'reason_for_reward' => 'Because You Accomplished The Task',
+                        'employee_id' => $task->manager->id
+                    ]);
 
                     // سيتم اضافة مكافأة
                     foreach($task->employees as $employee) {
 
-                        $task->employee->update([
-                            'wallet' => $task->employee->wallet + $task->reward
+                        $employee->update([
+                            'wallet' => $employee->wallet + $task->reward
+                        ]);
+
+                        Reward::create([
+                            'reward_value' => $task->reward,
+                            'reason_for_reward' => 'Because You Accomplished The Task',
+                            'employee_id' => $employee->id
                         ]);
 
                     }
 
                 // لو سلمها بعد ميعاد التسليم 
-                } elseif($task->delivered_time < $task->date) {
+                } elseif($task->delivered_time > $task->date) {
+
+                    $task->manager->update([
+                        'wallet' => $task->manager->wallet - $task->rival
+                    ]);
+
+                    Rival::create([
+                        'rival_value' => $task->rival,
+                        'reason_for_rival' => 'Because You Were Bad In The Task',
+                        'employee_id' => $task->manager->id
+                    ]);
 
                     // سيتم اضافة خصم
                     foreach($task->employees as $employee) {
 
-                        $task->employee->update([
-                            'wallet' => $task->employee->wallet - $task->rival
+                        $employee->update([
+                            'wallet' => $employee->wallet - $task->rival
+                        ]);
+
+                        Rival::create([
+                            'rival_value' => $task->rival,
+                            'reason_for_rival' => 'Because You Were Bad In The Task',
+                            'employee_id' => $employee->id
                         ]);
 
                     }
@@ -196,7 +231,7 @@ class TaskController extends Controller
 
                 $task->update([
                     'status'         => 'delivered',
-                    'delivered_time' => NOW()
+                    'delivered_time' => now()
                 ]);
 
             } else {
