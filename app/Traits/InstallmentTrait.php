@@ -13,6 +13,15 @@ use App\Models\Product;
 
 trait InstallmentTrait
 {
+  private function chooseModelProduct($type)
+  {
+    $modelType = match ($type) {
+      "supplier" => RawMaterial::class,
+      "customer" => Product::class,
+      default => throw new \Exception('Sorry, we not have this Model')
+    };
+    return $modelType;
+  }
 
   protected function storeInstallment(Request $request, $validator, string $type)
   {
@@ -24,6 +33,7 @@ trait InstallmentTrait
         "products" => $request->products,
         "installment_id" => $installment->id,
       ], $type);
+      $this->syncProductsWithRepository($request->products, $type, 'decrement');
 
       // Store Attachment
       if ($request->hasFile('attachment')) {
@@ -34,6 +44,7 @@ trait InstallmentTrait
       // Store Payments schedule
       $countInstallment = ceil($products->cost / $installment->installment_amount);
       $this->storePayments($installment, $products->cost, $countInstallment);
+
 
       // Update Installment
       $installment->update([
@@ -62,14 +73,9 @@ trait InstallmentTrait
    */
   protected function attachProducts($request, $type)
   {
-    $modelType = match ($type) {
-      "supplier" => RawMaterial::class,
-      "customer" => Product::class
-    };
-
     $cost = 0;
     foreach ($request->products as $productInfo) {
-      $product = $modelType::findOrFail($productInfo["id"]);
+      $product = $this->chooseModelProduct($type)::findOrFail($productInfo["id"]);
 
       if ($product) {
         $cost += $product->price_installment * $productInfo["quantity"];
@@ -84,6 +90,17 @@ trait InstallmentTrait
     return (object) [
       "cost" => $cost
     ];
+  }
+
+  protected function syncProductsWithRepository($products, $typeModel, $typeSync)
+  {
+    foreach ($products as $productInfo) {
+      if ($typeSync == 'increment') {
+        $this->chooseModelProduct($typeModel)::where('id', $productInfo["id"])->increment('quantity', $productInfo["quantity"]);
+      } elseif ($typeSync == 'decrement') {
+        $this->chooseModelProduct($typeModel)::where('id', $productInfo["id"])->decrement('quantity', $productInfo["quantity"]);
+      }
+    }
   }
 
   /**
@@ -214,6 +231,12 @@ trait InstallmentTrait
     try {
       $installment = Installment::with('payments')->findOrFail($id);
       $payments = $installment->payments()->where('status', 'paid')->get();
+      $products = $installment->type == 'customer' ? $installment->products()->get() : $installment->materials()->get();
+
+      // initialize Products format
+      $products = collect($products)->map(function ($item) {
+        return ['id' => $item->id, 'quantity' => $item->quantityInstallment];
+      });
 
       // Check if there are unpaid payments, if there are, close the installment
       if ($installment->status == 'paid') {
@@ -233,6 +256,8 @@ trait InstallmentTrait
             'status' => 'closed',
           ]);
         } else {
+          // Close the installment, Delete all payments, return count products
+          $this->syncProductsWithRepository($products, $installment->type, 'increment');
           $installment->update([
             'status' => 'closed',
           ]);

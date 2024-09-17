@@ -40,15 +40,16 @@ class MachineController extends Controller
    */
   public function store(Request $request)
   {
-
     //If Role == Admin
     $validate = Validator::make($request->all(), [
       'name'       => ['string', 'required', 'min:3', 'max:255'],
       'price'      => ['integer', 'required'],
       'is_damage'  => ['required', 'boolean'],
-      'quantity'   => ['integer', 'required'],
       'factories' => ['array', 'required'],
-      'factories.*' => ['exists:factories,id'],
+      'factories.*.id' => ['exists:factories,id'],
+      'factories.*.quantity' => ['integer', 'required'],
+      'raw_materials' => ['required', 'array'],
+      'raw_materials.*.id' => ['required', 'integer', 'exists:raw_materials,id'],
     ]);
 
     if ($validate->fails()) {
@@ -64,19 +65,17 @@ class MachineController extends Controller
     ]);
 
     foreach ($request->factories as $factory) {
-
       MachineFactory::create([
         'machine_id' => $machine->id,
-        'factory_id' => $factory,
-        'quantity'   => $request->quantity[$factory]
+        'factory_id' => $factory['id'],
+        'quantity'   => $factory['quantity']
       ]);
     }
 
     foreach ($request->raw_materials as $raw_material) {
-
       MachineRawMaterial::create([
         'machine_id' => $machine->id,
-        'raw_material_id' => $raw_material
+        'raw_material_id' => $raw_material['id']
       ]);
     }
 

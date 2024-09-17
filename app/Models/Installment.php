@@ -27,11 +27,11 @@ class Installment extends Model
 
   public function materials(): BelongsToMany
   {
-    return $this->belongsToMany(RawMaterial::class, "installment_products", "installment_id", "product_id");
+    return $this->belongsToMany(RawMaterial::class, "installment_products", "installment_id", "product_id")->select(['raw_materials.id', 'raw_materials.name', 'raw_materials.price_installment', 'raw_materials.quantity as quantityProduct', 'installment_products.quantity as quantityInstallment']);
   }
-  public function products(): BelongsToMany
+  public function products()
   {
-    return $this->belongsToMany(Product::class, "installment_products", "installment_id", "product_id");
+    return $this->belongsToMany(Product::class, "installment_products", "installment_id", "product_id")->select(['products.id', 'products.name', 'products.price_installment', 'products.quantity as quantityProduct', 'installment_products.quantity as quantityInstallment']);
   }
 
   public function payments(): HasMany

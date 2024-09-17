@@ -76,7 +76,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
   });
 
   // Raw Material Controller
-  Route::group(['prefix' => 'rawmaterial'], function () {
+  Route::group(['prefix' => 'rawmaterials'], function () {
     Route::get('/index', [RawMaterialController::class, 'index']);
     Route::get('/show/{id}', [RawMaterialController::class, 'show']);
     Route::post('/store', [RawMaterialController::class, 'store']);
