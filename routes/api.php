@@ -28,7 +28,10 @@ use App\Http\Controllers\{
   AttendanceController,
   OrderController,
   VacationRequestController,
-  SwitchController
+  SwitchController,
+  RepairController,
+  BuyingReturnController,
+  SellingReturnController
 };
 
 // User Auth
@@ -174,6 +177,23 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     // Attendants Invoice
     Route::group(['prefix' => 'attendance'], function () {
         Route::post('/store', [AttendanceController::class, 'store']);
+    });
+
+    // Repairs
+    Route::group(['prefix' => 'repairs'], function () {
+      Route::post('/store', [RepairController::class, 'store']);
+      Route::put('/update/{id}', [RepairController::class, 'update']);
+      Route::delete('/delete/{id}', [RepairController::class, 'delete']);
+    });
+
+    // Selling Return
+    Route::group(['prefix' => 'selling_return'], function () {
+      Route::put('/return/{id}', [SellingReturnController::class, 'return']);
+    });
+
+    // Buying Return
+    Route::group(['prefix' => 'buying_return'], function () {
+      Route::put('/return/{id}', [BuyingReturnController::class, 'return']);
     });
 
 });
