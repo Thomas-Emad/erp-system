@@ -62,6 +62,10 @@ trait ReportTrait
         $total_sales_last_year   = SellingInvoice::whereYear('created_at', $year)
                                                     ->where('status', '!=', 'closed')
                                                     ->sum('total_price') + $total_sales_installment_last_year;
+        //  جميع الاقساط التي يجب على العميل دفعها
+        $installments_due = Installment::where('type', 'customer')->where('status', 'open')->count();
+        // جميع الفواتير الاجلة التي يجب على العميل دفعها
+        $selling_invoices_due = SellingInvoice::where('status', 'agel')->count() + $installments_due;
 
         return response()->json([
             'total_sales'            => $total_sales,
@@ -70,7 +74,8 @@ trait ReportTrait
             'total_purchase_return'  => $total_purchase_return,
             'total_debtor'           => $total_debtor,
             'total_sales_last_month' => $total_sales_last_month,
-            'total_sales_last_year'  => $total_sales_last_year
+            'total_sales_last_year'  => $total_sales_last_year,
+            'selling_invoices_due'   => $selling_invoices_due
         ]);
 
     }

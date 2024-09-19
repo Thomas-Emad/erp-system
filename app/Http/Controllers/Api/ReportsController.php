@@ -9,6 +9,7 @@ use App\Traits\Reports\GetTopProductByProfitTrait;
 
 class ReportsController extends Controller
 {
+  
   use GetTopProductByProfitTrait, ReportTrait;
 
 
@@ -19,6 +20,7 @@ class ReportsController extends Controller
    * @throws \Exception If an error occurs while processing the request.
    * @return \Illuminate\Http\JsonResponse A JSON response containing the top products or an error message.
    */
+
   public function topProductsByProfit(Request $request)
   {
     try {
@@ -32,5 +34,7 @@ class ReportsController extends Controller
   {
 
     return $this->KeyMetrics();
+
   }
+
 }
