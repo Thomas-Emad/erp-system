@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('buying_invoices', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['cash', 'offer_price', 'agel'])->default('cash');
+            $table->enum('status', ['cash', 'offer_price', 'agel', 'closed'])->default('cash');
             $table->decimal('total_price')->default(0);
             $table->foreignId('factory_id')->constrained('factories', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('supplier_id')->constrained('suppliers', 'id')->cascadeOnDelete()->cascadeOnUpdate();

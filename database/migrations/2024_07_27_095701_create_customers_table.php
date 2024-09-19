@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('admin_id');
             $table->string('name', 50);
+            $table->decimal('creditor');
             $table->string('phone', 20)->nullable();
             $table->string('address', 30)->nullable();
             $table->date('brithday')->nullable();

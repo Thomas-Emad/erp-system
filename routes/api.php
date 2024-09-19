@@ -13,7 +13,8 @@ use App\Http\Controllers\Api\{
   InstallmentSupplierController,
   InstallmentCustomerController,
   TransactionController,
-  SalariesController
+  SalariesController,
+  ReportsController
 };
 
 use App\Http\Controllers\{
@@ -194,6 +195,11 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     // Buying Return
     Route::group(['prefix' => 'buying_return'], function () {
       Route::put('/return/{id}', [BuyingReturnController::class, 'return']);
+    });
+
+    // Reports
+    Route::group(['prefix' => 'reports'], function () {
+      Route::get('/key_matrics', [ReportsController::class, 'report']);
     });
 
 });
