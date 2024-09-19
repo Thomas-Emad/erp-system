@@ -146,60 +146,60 @@ Route::group(['middleware' => 'JwtAuth'], function () {
   Route::apiResource('/transactions', TransactionController::class);
   Route::apiResource('/salaries', SalariesController::class);
 
-      // Order Invoice
-      Route::group(['prefix' => 'orders'], function () {
-        Route::post('/create', [OrderController::class, 'CraeteOrder']);
-        Route::put('/AddProduct/{order_id}', [OrderController::class, 'AddProductInOreder']);
-        Route::put('/edit/{order_id}', [OrderController::class, 'DeliveryOfTheOrder']);
-    });
+  // Order Invoice
+  Route::group(['prefix' => 'orders'], function () {
+    Route::post('/create', [OrderController::class, 'CraeteOrder']);
+    Route::put('/AddProduct/{order_id}', [OrderController::class, 'AddProductInOreder']);
+    Route::put('/edit/{order_id}', [OrderController::class, 'DeliveryOfTheOrder']);
+  });
 
-    // Switchs Invoice
-    Route::group(['prefix' => 'switchs'], function () {
-        Route::post('/store', [SwitchController::class, 'SwitchBetweenStore']);
-        Route::post('/factory', [SwitchController::class, 'SwitchBetweenFactory']);
-    });
+  // Switchs Invoice
+  Route::group(['prefix' => 'switchs'], function () {
+    Route::post('/store', [SwitchController::class, 'SwitchBetweenStore']);
+    Route::post('/factory', [SwitchController::class, 'SwitchBetweenFactory']);
+  });
 
-    // vacation request Invoice
-    Route::group(['prefix' => 'vacation_request'], function () {
-        Route::post('/store', [VacationRequestController::class, 'store']);
-        Route::put('/update/{id}', [VacationRequestController::class, 'update']);
-        Route::delete('/delete/{id}', [VacationRequestController::class, 'delete']);
-    });
+  // vacation request Invoice
+  Route::group(['prefix' => 'vacation_request'], function () {
+    Route::post('/store', [VacationRequestController::class, 'store']);
+    Route::put('/update/{id}', [VacationRequestController::class, 'update']);
+    Route::delete('/delete/{id}', [VacationRequestController::class, 'delete']);
+  });
 
-    // Tasks Invoice
-    Route::group(['prefix' => 'tasks'], function () {
-        Route::post('/store', [TaskController::class, 'store']);
-        Route::put('/update/{id}', [TaskController::class, 'update']);
-        Route::put('/add_employee/{id}', [TaskController::class, 'add_employee_for_task']);
-        Route::put('/modify_by_admin/{id}', [TaskController::class, 'modify_status_by_admin']);
-        Route::put('/modify_by_manager/{id}', [TaskController::class, 'modify_status_by_manager']);
-    });
+  // Tasks Invoice
+  Route::group(['prefix' => 'tasks'], function () {
+    Route::post('/store', [TaskController::class, 'store']);
+    Route::put('/update/{id}', [TaskController::class, 'update']);
+    Route::put('/add_employee/{id}', [TaskController::class, 'add_employee_for_task']);
+    Route::put('/modify_by_admin/{id}', [TaskController::class, 'modify_status_by_admin']);
+    Route::put('/modify_by_manager/{id}', [TaskController::class, 'modify_status_by_manager']);
+  });
 
-    // Attendants Invoice
-    Route::group(['prefix' => 'attendance'], function () {
-        Route::post('/store', [AttendanceController::class, 'store']);
-    });
+  // Attendants Invoice
+  Route::group(['prefix' => 'attendance'], function () {
+    Route::post('/store', [AttendanceController::class, 'store']);
+  });
 
-    // Repairs
-    Route::group(['prefix' => 'repairs'], function () {
-      Route::post('/store', [RepairController::class, 'store']);
-      Route::put('/update/{id}', [RepairController::class, 'update']);
-      Route::delete('/delete/{id}', [RepairController::class, 'delete']);
-    });
+  // Repairs
+  Route::group(['prefix' => 'repairs'], function () {
+    Route::post('/store', [RepairController::class, 'store']);
+    Route::put('/update/{id}', [RepairController::class, 'update']);
+    Route::delete('/delete/{id}', [RepairController::class, 'delete']);
+  });
 
-    // Selling Return
-    Route::group(['prefix' => 'selling_return'], function () {
-      Route::put('/return/{id}', [SellingReturnController::class, 'return']);
-    });
+  // Selling Return
+  Route::group(['prefix' => 'selling_return'], function () {
+    Route::put('/return/{id}', [SellingReturnController::class, 'return']);
+  });
 
-    // Buying Return
-    Route::group(['prefix' => 'buying_return'], function () {
-      Route::put('/return/{id}', [BuyingReturnController::class, 'return']);
-    });
+  // Buying Return
+  Route::group(['prefix' => 'buying_return'], function () {
+    Route::put('/return/{id}', [BuyingReturnController::class, 'return']);
+  });
 
-    // Reports
-    Route::group(['prefix' => 'reports'], function () {
-      Route::get('/key_matrics', [ReportsController::class, 'report']);
-    });
-
+  // Reports
+  Route::group(['prefix' => 'reports'], function () {
+    Route::get('/top-product', [ReportsController::class, 'topProductsByProfit']);
+    Route::get('/key_matrics', [ReportsController::class, 'report']);
+  });
 });

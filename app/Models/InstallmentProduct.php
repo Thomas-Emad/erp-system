@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class InstallmentProduct extends Model
@@ -16,6 +17,11 @@ class InstallmentProduct extends Model
     "price",
     "quantity"
   ];
+
+  public function installment(): BelongsTo
+  {
+    return $this->belongsTo(Installment::class, "installment_id", "id");
+  }
 
   public function material(): HasOne
   {
