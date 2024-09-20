@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Traits\ReportTrait;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Traits\Reports\GetTopProductByProfitTrait;
+use App\Traits\Reports\{GetTopProductByProfitTrait, PurchaseSaleReportTrait};
 
 class ReportsController extends Controller
 {
-  
-  use GetTopProductByProfitTrait, ReportTrait;
+
+  use GetTopProductByProfitTrait, ReportTrait, PurchaseSaleReportTrait;
 
 
   /**
@@ -24,7 +24,7 @@ class ReportsController extends Controller
   public function topProductsByProfit(Request $request)
   {
     try {
-      return  $this->topProducts($request);
+      return  $this->topProductsReport($request);
     } catch (\Exception $e) {
       return response()->json(['message' => $e->getMessage()], 400);
     }
@@ -32,9 +32,17 @@ class ReportsController extends Controller
 
   public function report()
   {
-
     return $this->KeyMetrics();
-
   }
 
+  /**
+   * Generates a purchase sale report based on the provided request.
+   *
+   * @param Request $request The incoming HTTP request containing parameters for the report.
+   * @return mixed The generated purchase sale report.
+   */
+  public function purchaseSale(Request $request)
+  {
+    return $this->purchaseSaleReport($request);
+  }
 }

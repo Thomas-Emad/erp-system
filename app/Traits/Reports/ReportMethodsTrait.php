@@ -4,14 +4,12 @@ namespace App\Traits\Reports;
 
 trait ReportMethodsTrait
 {
-  /*************  ✨ Codeium AI Suggestion  *************/
   /**
    * Filters data based on the provided type.
    *
    * @param string $typeFilterBy The type of filter to apply (e.g. 'today', 'yesterday', 'last_week', etc.)
    * @return array An array containing the start and end dates for the filtered data
    */
-  /****  bot-4a9364e7-981d-4563-aa34-07179b05f331  *****/
   protected function filterDataBy($typeFilterBy)
   {
     $filterDate = match ($typeFilterBy) {
