@@ -21,6 +21,8 @@ return new class extends Migration
       $table->decimal('price_installment');
       $table->integer('quantity')->default(0);
       $table->text('image');
+      $table->boolean('is_expire')->default(0);
+      $table->date('expire_date');
       $table->foreignId('machine_id')->constrained('machines', 'id')->cascadeOnDelete()->cascadeOnUpdate();
       $table->timestamps();
     });

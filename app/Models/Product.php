@@ -17,6 +17,8 @@ class Product extends Model
     'profit',
     'quantity',
     'image',
+    'is_expire',
+    'expire_date',
     'machine_id',
     'price_installment'
   ];

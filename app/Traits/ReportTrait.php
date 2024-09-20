@@ -1,6 +1,11 @@
 <?php
 
 namespace App\Traits;
+
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Salary;
+use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Installment;
 use App\Models\BuyingReturn;
@@ -66,16 +71,49 @@ trait ReportTrait
         $installments_due = Installment::where('type', 'customer')->where('status', 'open')->count();
         // جميع الفواتير الاجلة التي يجب على العميل دفعها
         $selling_invoices_due = SellingInvoice::where('status', 'agel')->count() + $installments_due;
+        // جميع الاقساط التي يجب على العميل دفعها اليوم
+        $installments_due_today_for_customers = Installment::where('type', 'customer')
+                                                ->whereDate('start', today())
+                                                ->where('status', 'open')
+                                                ->count();
+        // إجمالي سعر الأقساط المستحقة اليوم للعملاء
+        $The_total_price_of_installments_due_today_for_customers =  Installment::where('type', 'customer')
+                                                                    ->where('status', 'open')
+                                                                    ->whereDate('start', today())
+                                                                    ->sum('installment_amount');  
+        // جميع دفع رواتب هذا الشهر
+        $sallary = Salary::whereBetween('created_at', [
+            Carbon::now()->startOfMonth(),
+            Carbon::now()->endOfMonth()
+        ])->sum('amount'); 
+        //  اجمالي تكلفة رواتب هذا الشهر
+        $total_salary = User::sum('wallet') + $sallary;
+        //  اجمالي رواتب هذا الشهر الغير مدفوعة
+        $total_salary_unpaid = User::sum('wallet');
+        // اجمالي عدد المنتجات السليمة
+        $total_products_unexpired = Product::where('is_expire', 0)->sum('quantity');
+        // جميع المنتجات التي يتم انتهاء صلاحيتها من اليوم الى الشهر القادم
+        $product_expired = Product::whereBetween('expire_date', [
+            Carbon::today(),
+            Carbon::now()->addMonth()
+        ])->get();
+
 
         return response()->json([
-            'total_sales'            => $total_sales,
-            'total_sell_return'      => $total_sell_return,
-            'total_purchase'         => $total_purchase,
-            'total_purchase_return'  => $total_purchase_return,
-            'total_debtor'           => $total_debtor,
-            'total_sales_last_month' => $total_sales_last_month,
-            'total_sales_last_year'  => $total_sales_last_year,
-            'selling_invoices_due'   => $selling_invoices_due
+            'total_products_unexpired'                                => $total_products_unexpired,
+            'product_expired'                                         => $product_expired,
+            'total_salary'                                            => $total_salary,
+            'total_salary_unpaid'                                     => $total_salary_unpaid,
+            'total_sales'                                             => $total_sales,
+            'total_sell_return'                                       => $total_sell_return,
+            'total_purchase'                                          => $total_purchase,
+            'total_purchase_return'                                   => $total_purchase_return,
+            'total_debtor'                                            => $total_debtor,
+            'total_sales_last_month'                                  => $total_sales_last_month,
+            'total_sales_last_year'                                   => $total_sales_last_year,
+            'selling_invoices_due'                                    => $selling_invoices_due,
+            'installments_due_today_for_customers'                    => $installments_due_today_for_customers,
+            'The_total_price_of_installments_due_today_for_customers' => $The_total_price_of_installments_due_today_for_customers
         ]);
 
     }
