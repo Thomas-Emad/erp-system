@@ -24,6 +24,17 @@ trait TransactionTrait
     ];
   }
 
+  /**
+   * Stores a transaction based on the provided request data.
+   *
+   *  Validates the request data against the rules defined in the rules() method.
+   *  If the data is valid, it attempts to store the transaction and returns a success response.
+   *  If the data is invalid or an error occurs during storage, it returns an error response.
+   *
+   * @param Request $request The request containing the transaction data.
+   * @throws \Exception If an error occurs during transaction storage.
+   * @return \Illuminate\Http\JsonResponse A JSON response indicating the result of the transaction storage.
+   */
   protected function storeTransaction(Request $request)
   {
 

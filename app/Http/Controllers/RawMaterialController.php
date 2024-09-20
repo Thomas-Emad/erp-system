@@ -42,7 +42,7 @@ class RawMaterialController extends Controller
     //If Role == Admin
     $validate = Validator::make($request->all(), [
       'name'        => ['required', 'string', 'min:3', 'max:255'],
-      'description' => ['required', 'text'],
+      'description' => ['required', 'string'],
       'price'       => ['string', 'required'],
       'price_installment' => ['required', 'integer'],
     ]);

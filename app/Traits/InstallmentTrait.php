@@ -10,9 +10,23 @@ use App\Models\InstallmentPayment;
 use App\Models\RawMaterial;
 use App\Models\InstallmentProduct;
 use App\Models\Product;
+use App\Models\Transaction;
+use App\Traits\TransactionTrait;
+
+
 
 trait InstallmentTrait
 {
+  use TransactionTrait;
+
+
+  /**
+   * Choose the model to use based on the type of installment.
+   *
+   * @param string $type The type of installment (supplier or customer).
+   * @return string The class name of the model to use.
+   * @throws \Exception If the given type is not supported.
+   */
   private function chooseModelProduct($type)
   {
     $modelType = match ($type) {
@@ -23,6 +37,20 @@ trait InstallmentTrait
     return $modelType;
   }
 
+  /**
+   * Stores an installment based on the provided request and validator data.
+   *
+   * This function creates a new installment, attaches products to it,
+   * synchronizes the products with the repository, stores any attachment,
+   * and schedules payments. It also updates the installment with the total
+   * cost and attachment information.
+   *
+   * @param Request $request The request object containing the installment data.
+   * @param mixed $validator The validator data for the installment.
+   * @param string $type The type of installment (supplier or customer).
+   * @throws \Exception If an error occurs during the installment creation process.
+   * @return \Illuminate\Http\JsonResponse A JSON response indicating the result of the installment creation.
+   */
   protected function storeInstallment(Request $request, $validator, string $type)
   {
     $type == "supplier" ? 'supplier' : 'customer';
@@ -130,14 +158,6 @@ trait InstallmentTrait
    * @param int $countInstallment The number of installments.
    * @return void
    */
-  /**
-   * Stores the payments for an installment supplier by calculating the amount for each installment.
-   *
-   * @param object $installment The installment object containing the installment amount and other details.
-   * @param float $cost The total cost of the installment.
-   * @param int $countInstallment The number of installments.
-   * @return void
-   */
   protected function storePayments($installment, $cost, $countInstallment)
   {
     $pevTotalInstallment = 0;
@@ -176,6 +196,16 @@ trait InstallmentTrait
         $installment = Installment::with(['payments'])->where('status', 'unpaid')->findOrFail($request->installment_id);
         $payments = $installment->payments()->where('status', 'unpaid')->get();
         $totalPaidByClient = $request->amount + $installment->credit_balance;
+
+        // Add Transaction Payment
+        $requestTransaction = new Request([
+          'client_id' => $installment->client_id,
+          'client_type' => $installment->client_type,
+          'amount' => $request->amount,
+          'type_transaction' => 'deposit',
+          'transaction_category' =>  $installment->client_type == 'customer' ? 'receive_installment' : 'pay_installment'
+        ]);
+        $this->storeTransaction($requestTransaction);
 
         // Store attachment
         if ($request->hasFile('attachment')) {

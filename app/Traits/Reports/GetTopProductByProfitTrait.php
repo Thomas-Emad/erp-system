@@ -59,7 +59,7 @@ trait GetTopProductByProfitTrait
    * @param Request $request The HTTP request object.
    * @return Collection The collection of top products with their quantity and profit.
    */
-  protected function topProducts(Request $request)
+  protected function topProductsReport(Request $request)
   {
     // get Products for installments With his Profit
     $productsInstallment = InstallmentProduct::with('product')
