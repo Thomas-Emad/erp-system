@@ -12,6 +12,7 @@ class BuyingInvoice extends Model
     protected $fillable = [
         'status',
         'total_price',
+        'shipping_price',
         'supplier_id',
         'factory_id'        
     ];

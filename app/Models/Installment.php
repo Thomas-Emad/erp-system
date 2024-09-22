@@ -15,6 +15,7 @@ class Installment extends Model
   protected $fillable = [
     "client_id",
     "total_installment",
+    'shipping_price',
     'installment_amount',
     "duration",
     "start",

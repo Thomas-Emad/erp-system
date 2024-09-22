@@ -30,9 +30,16 @@ class ReportsController extends Controller
     }
   }
 
-  public function report()
-  {
+  public function report() {
+
     return $this->KeyMetrics();
+
+  }
+
+  public function report_details() {
+
+    return $this->get_report_details();
+
   }
 
   /**

@@ -4,18 +4,27 @@ namespace App\Traits;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Salary;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\Transaction;
+use App\Models\RawMaterial;
 use App\Models\Installment;
 use App\Models\BuyingReturn;
 use App\Models\SellingReturn;
 use App\Models\BuyingInvoice;
 use App\Models\SellingInvoice;
+use App\Models\InstallmentProduct;
+use App\Models\InstallmentPayment;
+use App\Models\SellingInvoiceProduct;
+use App\Models\BuyingInvoiceRawMaterial;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 trait ReportTrait
 {
-    
+
     private function KeyMetrics() {
 
         $month = now()->subDays(30);
@@ -51,7 +60,7 @@ trait ReportTrait
         $total_sales             = SellingInvoice::where('status', '!=', 'closed')
                                     ->sum('total_price') + $total_sales_installment;
         // جميع مرتجع المبيعات الكاش والاقساط والاجلة
-        $total_sell_return       = SellingReturn::sum('total_price') + $total_sales_return_installment;
+        $total_sell_return = SellingReturn::sum('total_price') + $total_sales_return_installment;
         // حميع المشتريات الكاش والاقساط والاجلة
         $total_purchase          = BuyingInvoice::where('status', '!=', 'closed')
                                     ->sum('total_price') + $total_purchase_installment;
@@ -117,5 +126,80 @@ trait ReportTrait
         ]);
 
     }
+
+    public function get_report_details() {
+
+        $year  = now()->year;
+        $installment_product = InstallmentProduct::whereYear('created_at', $year)      
+                                ->whereHas('installment', function (Builder $query) {
+                                    $query->whereNot('status', 'closed');
+                                })        
+                                ->whereHas('installment', function (Builder $query) {
+                                    $query->where('type', 'customer');
+                                })->sum('quantity');
+
+        $selling_invoice_product = SellingInvoiceProduct::whereYear('created_at', $year)      
+                                    ->whereHas('selling_invoice', function (Builder $query) {
+                                        $query->whereNot('status', 'closed');
+                                    })->sum('quantity');
+
+        $opening_stock_by_sale = Product::sum('quantity') + $selling_invoice_product + $installment_product;
+
+        // ----------
+        $installment_product = InstallmentProduct::whereYear('created_at', $year)      
+                                ->whereHas('installment', function (Builder $query) {
+                                    $query->whereNot('status', 'closed');
+                                })        
+                                ->whereHas('installment', function (Builder $query) {
+                                    $query->where('type', 'supplier');
+                                })->sum('quantity');
+
+        $buying_invoice_product = buyingInvoiceRawMaterial::whereYear('created_at', $year)      
+                                    ->whereHas('buying_invoice', function (Builder $query) {
+                                        $query->whereNot('status', 'closed');
+                                    })->sum('quantity');
+
+        $opening_stock_by_purchase = RawMaterial::sum('quantity') + $buying_invoice_product + $installment_product;
+
+        // -----------
+        $transactions = Transaction::whereYear('created_at', $year)->where('transaction_type', 'withdraw')->sum('amount');
+
+        // -----------
+        $Sales_shipping_cost     = SellingInvoice::whereYear('created_at', $year)->sum('shipping_price');
+        $purchases_shipping_cost = BuyingInvoice::whereYear('created_at', $year)->sum('shipping_price');
+        $orders_shipping_cost    = Order::whereYear('created_at', $year)->sum('shipping_price');
+        $production_shipping_cost = Order::whereYear('created_at', $year)->sum('total_cost');
+
+        // ------------
+        $ending_stock_by_sale = Product::sum('quantity');
+        $ending_stock_by_purchase = RawMaterial::sum('quantity');
+
+        // ------------
+        $total_installment_payment = InstallmentPayment::whereHas('installment', function (Builder $query) {
+                                                            $query->where('status', 'open');
+                                                        })->whereHas('installment', function (Builder $query) {
+                                                            $query->where('type', 'customer');
+                                                        })->sum('amount');
+        $Total_customer_installment = Installment::where('type', 'customer')->sum('total_installment') - $total_installment_payment;
+
+        return response([
+            'opening_stock_by_sale'     => $opening_stock_by_sale,
+            'opening_stock_by_purchase' => $opening_stock_by_purchase,
+            'total_sell_return'         => $this->KeyMetrics()->original['total_sell_return'],
+            'total_purchase_return'     => $this->KeyMetrics()->original['total_purchase_return'],
+            'total_salary'              => $this->KeyMetrics()->original['total_salary'],
+            'total_sales'               => $this->KeyMetrics()->original['total_sales'],
+            'total_purchase'            => $this->KeyMetrics()->original['total_purchase'],
+            'transactions'              => $transactions,
+            'Sales_shipping_cost'       => $Sales_shipping_cost,
+            'purchases_shipping_cost'   => $purchases_shipping_cost,
+            'orders_shipping_cost'      => $orders_shipping_cost,
+            'production_shipping_cost'  => $production_shipping_cost,
+            'ending_stock_by_sale'      => $ending_stock_by_sale,
+            'ending_stock_by_purchase'  => $ending_stock_by_purchase,
+            'Total_customer_installment'=> $Total_customer_installment
+        ]);
+
+    } 
 
 }

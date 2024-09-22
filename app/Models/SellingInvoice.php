@@ -12,6 +12,7 @@ class SellingInvoice extends Model
     protected $fillable = [
         'status',
         'customer_id',
-        'total_price'
+        'total_price',
+        'shipping_price'
     ];
 }
