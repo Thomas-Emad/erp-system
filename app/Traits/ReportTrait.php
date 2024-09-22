@@ -180,7 +180,19 @@ trait ReportTrait
                                                         })->whereHas('installment', function (Builder $query) {
                                                             $query->where('type', 'customer');
                                                         })->sum('amount');
-        $Total_customer_installment = Installment::where('type', 'customer')->sum('total_installment') - $total_installment_payment;
+        $Total_customer_installment = Installment::where('type', 'customer')->sum('total_installment') - $total_installment_payment;      
+
+        // -------------
+        $cost_of_goods_sold = DB::table('selling_invoice_products as sip')
+                            ->join('selling_invoices as si', 'sip.selling_invoice_id', '=', 'si.id')
+                            ->join('products as p', 'sip.product_id', '=', 'p.id')
+                            ->select(DB::raw('sip.quantity * p.cost_price as total_cost'))
+                            ->where('si.status', 'cash')
+                            ->whereYear('sip.created_at', $year)
+                            ->get();
+                            
+        $gross_profit = $this->KeyMetrics()->original['total_sales'] - $cost_of_goods_sold[0]->total_cost;
+        $net_profit = $gross_profit - $transactions;
 
         return response([
             'opening_stock_by_sale'     => $opening_stock_by_sale,
@@ -197,7 +209,10 @@ trait ReportTrait
             'production_shipping_cost'  => $production_shipping_cost,
             'ending_stock_by_sale'      => $ending_stock_by_sale,
             'ending_stock_by_purchase'  => $ending_stock_by_purchase,
-            'Total_customer_installment'=> $Total_customer_installment
+            'Total_customer_installment'=> $Total_customer_installment,
+            'cost_of_goods_sold'        => $cost_of_goods_sold[0]->total_cost,
+            'gross_profit'              => $gross_profit,
+            'net_profit'                => $net_profit
         ]);
 
     } 

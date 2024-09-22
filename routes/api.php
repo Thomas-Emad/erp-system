@@ -197,6 +197,8 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::put('/return/{id}', [BuyingReturnController::class, 'return']);
   });
 
+});
+
   // Reports
   Route::group(['prefix' => 'reports'], function () {
     Route::get('/top-product', [ReportsController::class, 'topProductsByProfit']);
@@ -204,5 +206,3 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::get('/report_details', [ReportsController::class, 'report_details']);
     Route::get('/purchase-sale', [ReportsController::class, 'purchaseSale']);
   });
-  
-});
