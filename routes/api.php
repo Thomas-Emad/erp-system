@@ -203,5 +203,4 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::get('/key_matrics', [ReportsController::class, 'report']);
     Route::get('/purchase-sale', [ReportsController::class, 'purchaseSale']);
   });
-  
 });
