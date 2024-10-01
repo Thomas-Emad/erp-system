@@ -17,6 +17,7 @@ return new class extends Migration
       $table->string('attachment')->nullable();
       $table->decimal('total_installment', 10, 2)->default(0);
       $table->decimal('installment_amount', 10, 2)->default(0);
+      $table->decimal("shipping_price")->default(0);
       $table->date("start");
       $table->date("end")->nullable();
       $table->enum("duration", ['week', 'month', 'year'])->default('month');

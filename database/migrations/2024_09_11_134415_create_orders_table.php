@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->decimal('total_cost')->default(0);
+            $table->decimal('shipping_price')->default(0);
             $table->date('time');
             $table->enum('status', ['waiting', 'working', 'delivered'])->default('waiting');
             // المخزن اللي هيروح فيه المنتجات بعد تصنيعها
